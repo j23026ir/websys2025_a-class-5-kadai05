@@ -14,8 +14,34 @@
     <script>
         async function some_api(myForm) {
             // ここにコードを書く
-            document.getElementById("result").innerHTML += myForm.form_data.value+"<br />";
-            document.apiform.reset();
+            async function searchYoutube() {
+            const apiKey = "AIzaSyC9KZUQ_2GB5gqMnokMR4lcivZQVqyodQ8"; // YouTube APIキーを入力
+            const query = document.getElementById("searchQuery").value;
+            const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=5&key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error("ネットワークエラー");
+                }
+                const data = await response.json();
+
+                let html = "<h2>検索結果</h2>";
+                data.items.forEach(item => {
+                    html += `
+                        <div>
+                            <a href="https://www.youtube.com/watch?v=${item.id.videoId}" target="_blank">
+                                <img src="${item.snippet.thumbnails.default.url}" alt="サムネイル">
+                                <p><strong>${item.snippet.title}</strong></p>
+                            </a>
+                        </div>
+                    `;
+                });
+            
+                 document.getElementById("result").innerHTML = html;
+            } catch (error) {
+                document.getElementById("result").innerHTML = `<p style="color:red;">エラー: ${error.message}</p>`;
+            }
         }
     </script>
 </body>
